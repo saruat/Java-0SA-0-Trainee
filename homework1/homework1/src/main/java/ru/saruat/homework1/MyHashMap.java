@@ -1,4 +1,4 @@
-package ru.saruat.homework.homework1;
+package ru.saruat.homework1;
 
 import java.util.Arrays;
 import java.util.Objects;
