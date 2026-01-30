@@ -9,6 +9,8 @@ public class MyHashMap<K, V> {
 
     private static final float LOAD_FACTOR = 0.75f;
 
+    private static final String KEY_NULL_MESSAGE = "Key cannot be null";
+
     private Node<K, V>[] buckets;
 
     private int size;
@@ -40,7 +42,7 @@ public class MyHashMap<K, V> {
     }
 
     public void put(K key, V value) {
-        if (key == null) throw new NullPointerException("Key cannot be null");
+        if (key == null) throw new NullPointerException(KEY_NULL_MESSAGE);
 
         int index = hash(key);
         Node<K, V> current = buckets[index];
@@ -66,7 +68,7 @@ public class MyHashMap<K, V> {
     }
 
     public V get(K key) {
-        if (key == null) throw new NullPointerException("Key cannot be null");
+        if (key == null) throw new NullPointerException(KEY_NULL_MESSAGE);
 
         int index = hash(key);
         Node<K, V> current = buckets[index];
@@ -82,7 +84,7 @@ public class MyHashMap<K, V> {
     }
 
     public V remove(K key) {
-        if (key == null) throw new NullPointerException("Key cannot be null");
+        if (key == null) throw new NullPointerException(KEY_NULL_MESSAGE);
 
         int index = hash(key);
 
