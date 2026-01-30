@@ -1,6 +1,6 @@
 # Файлы, игнорируемые по умолчанию
 !**/src/main/**/out/
 !**/src/test/**/out/
-.idea/
-.gigaide/
-target/
+**/.idea/
+**/.gigaide/
+**/target/
