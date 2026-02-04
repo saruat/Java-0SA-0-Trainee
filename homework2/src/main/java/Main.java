@@ -1,18 +1,26 @@
 import entity.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import service.IUserService;
 import service.UserServiceImpl;
 
+import java.io.BufferedOutputStream;
+import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
+    private static final Logger logger = LogManager.getLogger(Main.class);
+    private static final PrintStream syncOut = new PrintStream(new BufferedOutputStream(System.out), true);
 
     private static final IUserService userService = new UserServiceImpl();
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        logger.info("Начало работы приложения");
+
         while (true) {
             printMenu();
             int choice = scanner.nextInt();
@@ -35,32 +43,32 @@ public class Main {
                     listAllUsers();
                     break;
                 case 6:
-                    System.out.println("Работа приложения завершена");
+                    logger.info("Работа приложения завершена");
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Нет такого пункта, введите число от 1 до 6");
+                    logger.warn("Нет такого пункта, введите число от 1 до 6");
             }
         }
     }
 
     private static void printMenu() {
-        System.out.println("\nМеню:");
-        System.out.println("1. Создать пользователя");
-        System.out.println("2. Просмотреть пользователя");
-        System.out.println("3. Обновить пользователя");
-        System.out.println("4. Удалить пользователя");
-        System.out.println("5. Просмотреть всех пользователей");
-        System.out.println("6. Выход");
-        System.out.print("Ваш выбор: ");
+        syncOut.println("\nМеню:");
+        syncOut.println("1. Создать пользователя");
+        syncOut.println("2. Просмотреть пользователя");
+        syncOut.println("3. Обновить пользователя");
+        syncOut.println("4. Удалить пользователя");
+        syncOut.println("5. Просмотреть всех пользователей");
+        syncOut.println("6. Выход");
+        syncOut.print("Ваш выбор: ");
     }
 
     private static void createUser() {
-        System.out.print("Введите имя: ");
+        syncOut.print("Введите имя: ");
         String name = scanner.nextLine();
-        System.out.print("Введите email: ");
+        syncOut.print("Введите email: ");
         String email = scanner.nextLine();
-        System.out.print("Введите возраст: ");
+        syncOut.print("Введите возраст: ");
         int age = scanner.nextInt();
         scanner.nextLine(); // очистка буфера после ввода целого числа
 
@@ -71,34 +79,34 @@ public class Main {
         user.setCreatedAt(LocalDateTime.now());
 
         userService.create(user);
-        System.out.println("Пользователь создан.");
+        logger.info("Пользователь создан.");
     }
 
     private static void readUser() {
-        System.out.print("Введите ID пользователя: ");
+        syncOut.print("Введите ID пользователя: ");
         String stringId = scanner.nextLine();
 
         UUID uuidId = UUID.fromString(stringId);
         User user = userService.read(uuidId);
         if (user != null) {
-            System.out.println("Пользователь: " + user.toString());
+            logger.info("Пользователь: " + user.toString());
         } else {
-            System.out.println("Пользователь с таким ID не найден.");
+            logger.warn("Пользователь с таким ID не найден.");
         }
     }
 
     private static void updateUser() {
-        System.out.print("Введите ID пользователя для внесения изменений: ");
+        syncOut.print("Введите ID для внесения изменений: ");
         String stringId = scanner.nextLine();
 
         UUID uuidId = UUID.fromString(stringId);
         User user = userService.read(uuidId);
         if (user != null) {
-            System.out.print("Введите новое имя пользователя: ");
+            syncOut.print("Введите новое имя: ");
             String name = scanner.nextLine();
-            System.out.print("Введите новый email пользователя: ");
+            syncOut.print("Введите новый email: ");
             String email = scanner.nextLine();
-            System.out.print("Введите новый возраст пользователя: ");
+            syncOut.print("Введите новый возраст: ");
             int age = scanner.nextInt();
             scanner.nextLine(); // очистка буфера после ввода целого числа
 
@@ -107,27 +115,27 @@ public class Main {
             user.setAge(age);
 
             userService.update(user);
-            System.out.println("Данные обновлены.");
+            logger.info("Данные обновлены.");
         } else {
-            System.out.println("Пользователь с таким ID не найден.");
+            logger.warn("Пользователь с таким ID не найден.");
         }
     }
 
     private static void deleteUser() {
-        System.out.print("Введите ID пользователя для удаления: ");
+        syncOut.print("Введите ID пользователя для удаления: ");
         String stringId = scanner.nextLine();
 
         UUID uuidId = UUID.fromString(stringId);
         userService.delete(uuidId);
-        System.out.println("Пользователь успешно удален.");
+        logger.info("Пользователь успешно удален.");
     }
 
     private static void listAllUsers() {
         List<User> users = userService.findAll();
         if (users.isEmpty()) {
-            System.out.println("Нет пользователей в базе данных.");
+            logger.info("Нет пользователей в базе данных.");
         } else {
-            System.out.println("Список пользователей:");
+            logger.info("Список пользователей:");
             for (User user : users) {
                 System.out.println(user.toString());
             }

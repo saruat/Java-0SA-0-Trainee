@@ -3,36 +3,69 @@ package service;
 import dao.IUserDao;
 import dao.UserDaoImpl;
 import entity.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class UserServiceImpl implements IUserService {
+
+    private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
     private final IUserDao userDao = new UserDaoImpl();
 
     @Override
     public void create(User user) {
-        userDao.create(user);
+        try {
+            userDao.create(user);
+        } catch (Exception ex){
+            logger.error("Ошибка при создании пользователя:{}", ex.getMessage(), ex);
+        }
     }
 
     @Override
     public User read(UUID id) {
-        return userDao.read(id);
+        try {
+            Optional<User> userOptional = userDao.read(id);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                return user;
+            } else {
+                return null;            }
+        } catch (Exception ex){
+            logger.error("Ошибка при чтении пользователя:{}", ex.getMessage(), ex);
+            return null;
+        }
     }
 
     @Override
     public void update(User user) {
-        userDao.update(user);
+        try {
+            userDao.update(user);
+        } catch (Exception ex){
+            logger.error("Ошибка при изменении пользователя:{}", ex.getMessage(), ex);
+        }
     }
 
     @Override
     public void delete(UUID id) {
-        userDao.delete(id);
+        try {
+            userDao.delete(id);
+        } catch (Exception ex){
+            logger.error("Ошибка при удалении пользователя:{}", ex.getMessage(), ex);
+        }
     }
 
     @Override
     public List<User> findAll() {
-        return userDao.findAll();
+        try {
+            return userDao.findAll();
+        } catch (Exception ex) {
+            logger.error("Ошибка при получении списка пользователей: {}", ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
     }
 }

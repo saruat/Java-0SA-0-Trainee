@@ -4,6 +4,8 @@ import entity.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import util.HibernateUtil;
+
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -27,9 +29,10 @@ public class UserDaoImpl implements IUserDao {
     }
 
     @Override
-    public User read(UUID id) {
+    public Optional<User> read(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.find(User.class, id);
+            User user = session.find(User.class, id);
+            return Optional.ofNullable(user);
         }
     }
 
