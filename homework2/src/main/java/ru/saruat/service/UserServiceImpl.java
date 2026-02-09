@@ -1,8 +1,8 @@
-package service;
+package ru.saruat.service;
 
-import dao.IUserDao;
-import dao.UserDaoImpl;
-import entity.User;
+import ru.saruat.dao.IUserDao;
+import ru.saruat.dao.UserDaoImpl;
+import ru.saruat.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

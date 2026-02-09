@@ -1,8 +1,8 @@
-package util;
+package ru.saruat.util;
 
-import com.sun.tools.javac.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.saruat.Main;
 
 public class LoggerUtil {
     private static final Logger logger = LogManager.getLogger(Main.class);

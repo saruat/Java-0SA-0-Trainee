@@ -1,4 +1,4 @@
-package entity;
+package ru.saruat.entity;
 
 import jakarta.persistence.*;
 

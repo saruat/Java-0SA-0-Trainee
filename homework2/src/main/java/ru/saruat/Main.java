@@ -1,8 +1,10 @@
-import entity.User;
+package ru.saruat;
+
+import ru.saruat.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import service.IUserService;
-import service.UserServiceImpl;
+import ru.saruat.service.IUserService;
+import ru.saruat.service.UserServiceImpl;
 
 import java.io.BufferedOutputStream;
 import java.io.PrintStream;
@@ -11,8 +13,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
+import static org.apache.logging.log4j.LogManager.*;
+
 public class Main {
-    private static final Logger logger = LogManager.getLogger(Main.class);
+    private static final Logger logger = getLogger(Main.class);
     private static final PrintStream syncOut = new PrintStream(new BufferedOutputStream(System.out), true);
 
     private static final IUserService userService = new UserServiceImpl();

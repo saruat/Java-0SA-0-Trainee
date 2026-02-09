@@ -1,9 +1,9 @@
-package dao;
+package ru.saruat.dao;
 
-import entity.User;
+import ru.saruat.entity.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import util.HibernateUtil;
+import ru.saruat.util.HibernateUtil;
 
 import java.util.Optional;
 import java.util.UUID;

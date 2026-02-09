@@ -1,9 +1,8 @@
-package service;
+package ru.saruat.service;
 
-import entity.User;
+import ru.saruat.entity.User;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface IUserService {

@@ -1,6 +1,6 @@
-package dao;
+package ru.saruat.dao;
 
-import entity.User;
+import ru.saruat.entity.User;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
