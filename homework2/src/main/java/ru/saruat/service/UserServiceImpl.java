@@ -15,7 +15,12 @@ public class UserServiceImpl implements IUserService {
 
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
-    private final IUserDao userDao = new UserDaoImpl();
+    private IUserDao userDao = new UserDaoImpl();
+
+    // Только для тестов!
+    protected void setUserDaoForTesting(IUserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public void create(User user) {
