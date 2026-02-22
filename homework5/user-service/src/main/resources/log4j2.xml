@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <Appenders>
+        <!-- Логи для ConsoleService (меню, сообщения) -->
+        <Console name="UserConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%msg%n"/>
+        </Console>
+
+        <!-- Тех. логи (Spring, Tomcat, ...) -->
+        <File name="SpringLogFile" fileName="logs/spring.log" append="true">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+
+        <!-- логи Hibernate -->
+        <File name="HibernateLogFile" fileName="logs/hibernate.log" append="true">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <!-- Логгер для ConsoleService -->
+        <Logger name="ru.saruat.service.ConsoleService" level="INFO" additivity="false">
+            <AppenderRef ref="UserConsole"/>
+        </Logger>
+
+        <!-- Логгер для Hibernate -->
+        <Logger name="org.hibernate" level="DEBUG" additivity="false">
+            <AppenderRef ref="HibernateLogFile"/>
+        </Logger>
+
+        <!-- Логгер для остальных логов -->
+        <Root level="INFO" additivity="false">
+            <AppenderRef ref="SpringLogFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
