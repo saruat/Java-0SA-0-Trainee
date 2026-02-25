@@ -1,9 +1,12 @@
 package ru.saruat.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.stereotype.Service;
 import ru.saruat.dto.UserDTO;
+import ru.saruat.dto.UserEvent;
 import ru.saruat.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,14 +25,16 @@ public class UserServiceImpl implements IUserService {
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final KafkaSenderService kafkaSenderService;
 
+    @Value("${kafka.topics.userEvents}")
+    private String userEventsTopic;
 
     @Autowired
-    public UserServiceImpl (UserRepository userRepository, UserMapper userMapper){
+    public UserServiceImpl (UserRepository userRepository, UserMapper userMapper, KafkaSenderService kafkaSenderService){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-
-
+        this.kafkaSenderService = kafkaSenderService;
     }
 
     @Override
@@ -50,6 +55,10 @@ public class UserServiceImpl implements IUserService {
             User user = userMapper.convertToEntity(userDTO);
             user.setCreatedAt(java.time.LocalDateTime.now());
             User savedUser = userRepository.save(user);
+
+            // Отправляем событие в Kafka
+            kafkaSenderService.sendUserEvent(new UserEvent("CREATE", savedUser.getEmail()));
+
             return userMapper.convertToDTO(savedUser);
         } catch (Exception ex){
             logger.error("Ошибка при создании пользователя:{}", ex.getMessage(), ex);
@@ -75,7 +84,13 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void delete(UUID id) {
         try {
-            userRepository.deleteById(id);
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            userRepository.delete(user);
+
+            // Отправляем событие в Kafka
+            kafkaSenderService.sendUserEvent(new UserEvent("DELETE", user.getEmail()));
+
         } catch (Exception ex){
             logger.error("Ошибка при удалении пользователя:{}", ex.getMessage(), ex);
         }

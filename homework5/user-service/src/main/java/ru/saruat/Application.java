@@ -13,7 +13,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean
+    /*@Bean
     @ConditionalOnProperty(
             value = "app.console.enabled",
             havingValue = "true",
@@ -23,6 +23,6 @@ public class Application {
         return args -> {
             consoleService.runConsole(); // запускаем консольное меню
         };
-    }
+    }*/
 }
 
