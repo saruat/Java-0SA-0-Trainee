@@ -30,4 +30,9 @@ public class NotificationController {
         }
         return ResponseEntity.ok("Email sent to " + event.email());
     }
+
+    @PostMapping("/api/notify")
+    public String notify(@RequestBody String message) {
+        return "Notification sent: " + message;
+    }
 }

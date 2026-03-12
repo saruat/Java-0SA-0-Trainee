@@ -1,5 +1,73 @@
 
 services:
+  # === Service Discovery — Eureka Server ===
+  discovery-server:
+    image: discovery-server:latest
+    build:
+      context: ./discovery-server
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    environment:
+      SERVER_PORT: 8761    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      - app-network
+
+  # === Centralized Configuration — Config Server ===
+  config-server:
+    image: config-server:latest
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    environment:
+      SERVER_PORT: 8888
+      # Указываем Git-репозиторий с конфигами
+      SPRING_CLOUD_CONFIG_SERVER_GIT_URI: https://github.com/saruat/config-repo
+      SPRING_CLOUD_CONFIG_SERVER_GIT_CLONE-ON-START: 'true'  
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-server:8761/eureka
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      - app-network
+
+  # === API Gateway — единая точка входа ===
+  api-gateway:
+    image: api-gateway:latest
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      - app-network
   db:
     image: postgres:15
     environment:
@@ -56,34 +124,55 @@ services:
     networks:
       - app-network
   
+    # === User Service ===
   user-service:
-    build: ./user-service
+    image: user-service:latest
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8091:8081"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/user_service_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:9092
+      SERVER_PORT: 8081
     depends_on:
       db:
-        condition: service_healthy  # Ждём, пока БД будет готова
-      kafka:
-        condition: service_started
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
     networks:
       - app-network
 
+  # === Notification Service ===
   notification-service:
-    build: ./notification-service
+    image: notification-service:latest
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
     ports:
-      - "8083:8082"
+      - "8082:8082"
     environment:
-      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:9092
-      MAIL_HOST: mailhog
-      MAIL_PORT: 1025
+      SERVER_PORT: 8082
     depends_on:
-      - kafka
-      - mailhog
+      kafka:
+        condition: service_started
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
     networks:
       - app-network
 

@@ -1,0 +1,21 @@
+# Игнорируем всё
+*
+
+# Но разрешаем нужные файлы
+!pom.xml
+!src/
+!.mvn/
+!mvnw
+!mvnw.cmd
+
+# Опционально: если используете wrapper
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+# Исключаем .git и временные файлы
+.git/
+.gitignore
+README.md
+Dockerfile
+.dockerignore
+target/
