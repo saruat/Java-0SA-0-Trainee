@@ -16,6 +16,7 @@ import ru.saruat.dto.UserDTO;
 import ru.saruat.dto.UserUpdateRequest;
 import ru.saruat.resource.UserResource;
 import ru.saruat.service.IUserService;
+import ru.saruat.service.NotificationClient;
 
 import java.net.URI;
 import java.util.List;
@@ -31,10 +32,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserController {
 
     private final IUserService userService;
+    private final NotificationClient notificationClient;
+
 
     @Autowired
-    public UserController(IUserService userService){
+    public UserController(IUserService userService, NotificationClient notificationClient){
         this.userService = userService;
+        this.notificationClient = notificationClient;
     }
 
     @Operation(summary = "Получить всех пользователей", description = "Возвращает список пользователей с гиперссылками")
@@ -136,5 +140,10 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/users/{id}/notify")
+    public String notifyUser(@PathVariable String id) {
+        return "Result: " + notificationClient.sendNotification("User " + id + " created!");
     }
 }
